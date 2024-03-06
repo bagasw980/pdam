@@ -1,0 +1,307 @@
+// @/src/App.jsx
+import React, { useMemo, useState, useEffect } from "react";
+import {
+  Container,
+  Input,
+  Spacer,
+  Table,
+  Pagination,
+  Button,
+  Row,
+  Col,
+  Text,
+  Modal,
+  Divider,
+  Tooltip,
+} from "@nextui-org/react";
+// import { columns, rows } from "./data";
+import { IconButton } from "../table/table.styled";
+import { EyeIcon } from "../icons/table/eye-icon";
+import { EditIcon } from "../icons/table/edit-icon";
+import { DeleteIcon } from "../icons/table/delete-icon";
+import { Flex } from "../styles/flex";
+import { formatRupiah } from "../../utils/config";
+
+interface Row {
+  id: number;
+  name: string;
+  tarif: number;
+}
+
+const columns = [
+  {
+    key: "no",
+    label: "No",
+  },
+  {
+    key: "name",
+    label: "Nama Layanan",
+  },
+  {
+    key: "tarif",
+    label: "Tarif",
+  },
+  {
+    key: "actions",
+    label: "",
+  },
+];
+
+export default function DataLayanan({ search }: string) {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [visible, setVisible] = useState(false);
+  const [visibleDel, setVisibleDel] = useState(false);
+  const [editData, setEditData] = useState<Row>();
+  const rowsPerPage: number = 2;
+  const [rows, setRows] = useState([
+    {
+      id: 1,
+      name: "Layanan A",
+      tarif: 50000,
+    },
+    {
+      id: 2,
+      name: "Layanan B",
+      tarif: 75000,
+    },
+    {
+      id: 3,
+      name: "Layanan C",
+      tarif: 120000,
+    },
+    {
+      id: 4,
+      name: "Layanan D",
+      tarif: 90000,
+    },
+    {
+      id: 5,
+      name: "Layanan E",
+      tarif: 200000,
+    },
+    {
+      id: 6,
+      name: "Layanan F",
+      tarif: 60000,
+    },
+    {
+      id: 7,
+      name: "Layanan G",
+      tarif: 150000,
+    },
+    {
+      id: 8,
+      name: "Layanan H",
+      tarif: 85000,
+    },
+    {
+      id: 9,
+      name: "Layanan I",
+      tarif: 110000,
+    },
+    {
+      id: 10,
+      name: "Layanan J",
+      tarif: 180000,
+    },
+  ]);
+
+  const pages: number = Math.ceil(rows.length / rowsPerPage);
+
+  const items = React.useMemo(() => {
+    const start = (page - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    return rows.slice(start, end);
+  }, [page, rows]);
+
+  const filteredRows = useMemo(() => {
+    if (!searchTerm) return rows;
+
+    if (rows.length > 0) {
+      const attributes = Object.keys(rows[0]);
+
+      const list: Row[] = [];
+
+      for (const current of rows) {
+        // Instead of looping through attributes, you can directly access the properties
+        const value: string = current.name;
+        if (value.toLowerCase().includes(searchTerm.toLowerCase())) {
+          list.push(current);
+        }
+      }
+      return list;
+    }
+
+    return [];
+  }, [rows, searchTerm]);
+
+  const closeHandler = () => setVisible(false);
+  const closeHandlerDel = () => setVisibleDel(false);
+
+  useEffect(() => setSearchTerm(search), [search]);
+
+  return (
+    <Flex direction={"column"}>
+      <Table
+        lined
+        headerLined
+        shadow={false}
+        aria-label="Tabel Layanan"
+        css={{
+          height: "auto",
+          minWidth: "100%",
+          mb: "$20",
+        }}
+      >
+        <Table.Header>
+          {columns.map((column) => (
+            <Table.Column
+              css={{ fontSize: "1em", color: "$blue600" }}
+              key={column.key}
+            >
+              {column.label}
+            </Table.Column>
+          ))}
+        </Table.Header>
+        <Table.Body>
+          {filteredRows.map((row, index) => (
+            <Table.Row key={row.id}>
+              <Table.Cell>{index + 1}</Table.Cell>
+              <Table.Cell>{row.name}</Table.Cell>
+              <Table.Cell>{formatRupiah(row.tarif.toString())}</Table.Cell>
+              <Table.Cell>
+                <Row
+                  justify="center"
+                  align="center"
+                  css={{ gap: "$8", "@md": { gap: 0 } }}
+                >
+                  <Col css={{ d: "flex" }}>
+                    <Tooltip content="Edit Layanan">
+                      <IconButton
+                        onClick={() => {
+                          setEditData({
+                            id: row.id,
+                            name: row.name,
+                            tarif: row.tarif,
+                          });
+                          setVisible(true);
+                        }}
+                      >
+                        <EditIcon size={20} fill="#979797" />
+                      </IconButton>
+                    </Tooltip>
+                  </Col>
+                  <Col css={{ d: "flex" }}>
+                    <Tooltip
+                      content="Delete Layanan"
+                      color="error"
+                      onClick={() => {
+                        setEditData({
+                          id: row.id,
+                          name: row.name,
+                          tarif: row.tarif,
+                        });
+                        setVisibleDel(true);
+                      }}
+                    >
+                      <IconButton>
+                        <DeleteIcon size={20} fill="#FF0080" />
+                      </IconButton>
+                    </Tooltip>
+                  </Col>
+                </Row>
+              </Table.Cell>
+            </Table.Row>
+          ))}
+        </Table.Body>
+        <Table.Pagination
+          shadow
+          css={{ marginTop: "20px" }}
+          align="end"
+          rowsPerPage={10}
+          onPageChange={(page) => console.log({ page })}
+        />
+      </Table>
+      <Modal
+        closeButton
+        aria-labelledby="modal-title"
+        width="600px"
+        open={visible}
+        onClose={closeHandler}
+      >
+        <Modal.Header css={{ justifyContent: "start" }}>
+          <Text id="modal-title" h4>
+            Tambah Layanan Baru
+          </Text>
+        </Modal.Header>
+        <Divider css={{ my: "$5" }} />
+        <Modal.Body css={{ py: "$10" }}>
+          <Flex
+            direction={"column"}
+            css={{
+              flexWrap: "wrap",
+              gap: "$8",
+              "@lg": { flexWrap: "nowrap", gap: "$12" },
+            }}
+          >
+            <Flex
+              css={{
+                gap: "$10",
+                flexWrap: "wrap",
+                "@lg": { flexWrap: "nowrap" },
+              }}
+            >
+              <Input
+                label="Nama Layanan"
+                bordered
+                clearable
+                fullWidth
+                size="lg"
+                placeholder="Nama Layanan"
+                value={editData?.name}
+              />
+              <Input
+                label="Tarif Layanan"
+                clearable
+                bordered
+                fullWidth
+                size="lg"
+                placeholder="Tarif Layanan"
+                value={editData?.tarif}
+              />
+            </Flex>
+          </Flex>
+        </Modal.Body>
+        <Divider css={{ my: "$5" }} />
+        <Modal.Footer>
+          <Button auto onClick={closeHandler}>
+            Simpan
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal
+        closeButton
+        aria-labelledby="modal-title-1"
+        width="600px"
+        open={visibleDel}
+        onClose={closeHandlerDel}
+      >
+        <Modal.Header css={{ justifyContent: "start", marginBottom: "$5" }}>
+          <Text id="modal-title-1" h4>
+            Yakin ingin menghapus {editData?.name}?
+          </Text>
+        </Modal.Header>
+        <Modal.Footer>
+          <Button color={undefined} auto onClick={closeHandlerDel}>
+            Cancel
+          </Button>
+          <Button color={"error"} auto onClick={closeHandlerDel}>
+            Confirm
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </Flex>
+  );
+}

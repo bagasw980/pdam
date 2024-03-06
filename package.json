@@ -1,0 +1,38 @@
+{
+  "name": "dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "NODE_ENV=production node server.js",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@nextui-org/react": "^1.0.0-beta.10",
+    "@react-pdf/renderer": "^3.1.12",
+    "@yudiel/react-qr-scanner": "^1.1.10",
+    "apexcharts": "^3.35.5",
+    "axios": "^1.4.0",
+    "cookies-next": "^2.1.2",
+    "html2canvas": "^1.4.1",
+    "next": "12.3.0",
+    "next-themes": "^0.2.1",
+    "react": "18.2.0",
+    "react-apexcharts": "^1.4.0",
+    "react-dom": "18.2.0",
+    "react-icons": "^4.10.1",
+    "react-number-format": "^5.2.2",
+    "react-qr-code": "^2.0.12",
+    "react-to-print": "^2.14.13",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/node": "18.7.18",
+    "@types/react": "18.0.20",
+    "@types/react-dom": "18.0.6",
+    "eslint": "8.23.1",
+    "eslint-config-next": "12.3.0",
+    "typescript": "4.8.3"
+  }
+}
